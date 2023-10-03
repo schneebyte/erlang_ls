@@ -27,7 +27,7 @@
 %%==============================================================================
 %% Messaging API
 %%==============================================================================
--spec notification(binary(), any()) -> binary().
+-spec notification(binary(), any()) -> iodata().
 notification(Method, Params) ->
     Message = #{
         jsonrpc => ?JSONRPC_VSN,
@@ -36,7 +36,7 @@ notification(Method, Params) ->
     },
     content(jsx:encode(Message)).
 
--spec request(number(), binary()) -> binary().
+-spec request(number(), binary()) -> iodata().
 request(RequestId, Method) ->
     Message = #{
         jsonrpc => ?JSONRPC_VSN,
@@ -45,7 +45,7 @@ request(RequestId, Method) ->
     },
     content(jsx:encode(Message)).
 
--spec request(number(), binary(), any()) -> binary().
+-spec request(number(), binary(), any()) -> iodata().
 request(RequestId, Method, Params) ->
     Message = #{
         jsonrpc => ?JSONRPC_VSN,
@@ -55,7 +55,7 @@ request(RequestId, Method, Params) ->
     },
     content(jsx:encode(Message)).
 
--spec response(number(), any()) -> binary().
+-spec response(number(), any()) -> iodata().
 response(RequestId, Result) ->
     Message = #{
         jsonrpc => ?JSONRPC_VSN,
@@ -65,7 +65,7 @@ response(RequestId, Result) ->
     ?LOG_DEBUG("[Response] [message=~p]", [Message]),
     content(jsx:encode(Message)).
 
--spec error(number(), any()) -> binary().
+-spec error(number(), any()) -> iodata().
 error(RequestId, Error) ->
     Message = #{
         jsonrpc => ?JSONRPC_VSN,
@@ -88,10 +88,11 @@ range(#{from := {FromL, FromC}, to := {ToL, ToC}}) ->
 %%==============================================================================
 %% Internal Functions
 %%==============================================================================
--spec content(binary()) -> binary().
+-spec content(binary()) -> iodata().
 content(Body) ->
-    els_utils:to_binary([headers(Body), "\r\n", Body]).
-
--spec headers(binary()) -> iolist().
-headers(Body) ->
-    io_lib:format("Content-Length: ~p\r\n", [byte_size(Body)]).
+    [
+        <<"Content-Length: ">>,
+        integer_to_binary(byte_size(Body)),
+        <<"\r\n\r\n">>,
+        els_utils:to_binary(Body)
+    ].

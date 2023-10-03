@@ -350,7 +350,7 @@ do_send_response(Job, Result, State0) ->
             State0#{pending => Pending}
     end.
 
--spec send(binary(), state()) -> ok.
+-spec send(iodata(), state()) -> ok | {error, term()}.
 send(Payload, #{io_device := IoDevice}) ->
     els_stdio:send(IoDevice, Payload).
 

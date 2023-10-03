@@ -616,6 +616,6 @@ do_cancel_request(Id, State) ->
     Content = els_protocol:notification(Method, Params),
     send(IoDevice, Content).
 
--spec send(atom() | pid(), binary()) -> ok.
+-spec send(atom() | pid(), iodata()) -> ok | {error, term()}.
 send(IoDevice, Payload) ->
     els_stdio:send(IoDevice, Payload).

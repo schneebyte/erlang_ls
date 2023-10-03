@@ -29,9 +29,9 @@ init({Cb, IoDevice}) ->
     ok = Server:set_io_device(IoDevice),
     ?MODULE:loop([], IoDevice, Cb, [return_maps]).
 
--spec send(atom() | pid(), binary()) -> ok.
+-spec send(atom() | pid(), iodata()) -> ok | {error, term()}.
 send(IoDevice, Payload) ->
-    io:format(IoDevice, "~s", [Payload]).
+    file:write(IoDevice, Payload).
 
 %%==============================================================================
 %% Listener loop function
